@@ -25,4 +25,4 @@ jobs:
         run: pip install -r python_decryption/requirements.txt
 
       - name: Run script
-        run: python main.py
+        run: python python_decryption/main.py
