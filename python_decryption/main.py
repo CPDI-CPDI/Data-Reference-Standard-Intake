@@ -146,7 +146,7 @@ def load_private_api_key() -> PrivateApiKey:
     try:
         encoded_key = os.environ.get("PRIVATE_KEY_B64")
         if not encoded_key:
-            raise Exception("Environment variable GC_FORMS_PRIVATE_KEY_B64 not found")
+            raise Exception("Environment variable PRIVATE_KEY_B64 not found")
 
         decoded_bytes = base64.b64decode(encoded_key)
         file_as_json_object = json.loads(decoded_bytes.decode("utf-8"))
