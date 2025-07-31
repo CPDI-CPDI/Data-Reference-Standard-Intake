@@ -1,4 +1,6 @@
 import json
+import os
+import base64
 from pathlib import Path
 from access_token_generator import AccessTokenGenerator
 from data_structures import PrivateApiKey, FormSubmission, FormSubmissionProblem
@@ -139,20 +141,18 @@ Selection (1):
         print(access_token)
 
 
+
 def load_private_api_key() -> PrivateApiKey:
     try:
-        for file_path in Path(".").glob("*_private_api_key.json"):
-            if file_path.is_file():
-                with open(file_path, "r") as file:
-                    file_as_json_object = json.load(file)
-                    return PrivateApiKey.from_json(file_as_json_object)
+        encoded_key = os.environ.get("GC_FORMS_PRIVATE_KEY_B64")
+        if not encoded_key:
+            raise Exception("Environment variable GC_FORMS_PRIVATE_KEY_B64 not found")
 
-        raise Exception(
-            "Private API key file is either missing or there is more than one in the directory"
-        )
+        decoded_bytes = base64.b64decode(encoded_key)
+        file_as_json_object = json.loads(decoded_bytes.decode("utf-8"))
+        return PrivateApiKey.from_json(file_as_json_object)
     except Exception as exception:
-        raise Exception("Failed to load private API key") from exception
-
+        raise Exception("Failed to load private API key from environment") from exception
 
 if __name__ == "__main__":
     main()
