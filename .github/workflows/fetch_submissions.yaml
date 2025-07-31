@@ -10,7 +10,7 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
     env:
-      GC_FORMS_PRIVATE_KEY_B64: ${{ secrets.GC_FORMS_PRIVATE_KEY_B64 }}
+      PRIVATE_KEY_B64: ${{ secrets.PRIVATE_KEY_B64 }}
 
     steps:
       - name: Checkout repo
