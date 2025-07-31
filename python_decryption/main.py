@@ -144,7 +144,7 @@ Selection (1):
 
 def load_private_api_key() -> PrivateApiKey:
     try:
-        encoded_key = os.environ.get("GC_FORMS_PRIVATE_KEY_B64")
+        encoded_key = os.environ.get("PRIVATE_KEY_B64")
         if not encoded_key:
             raise Exception("Environment variable GC_FORMS_PRIVATE_KEY_B64 not found")
 
