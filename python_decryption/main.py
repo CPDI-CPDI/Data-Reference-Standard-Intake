@@ -11,7 +11,7 @@ from data_structures import PrivateApiKey, FormSubmission
 IDENTITY_PROVIDER_URL = "https://auth.forms-formulaires.alpha.canada.ca"
 PROJECT_IDENTIFIER = "284778202772022819"
 GCFORMS_API_URL = "https://api.forms-formulaires.alpha.canada.ca"
-CSV_FILENAME = "responses.csv"
+CSV_FILENAME = "python_decryption/responses.csv"
 
 def load_private_api_key() -> PrivateApiKey:
     try:
