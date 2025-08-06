@@ -26,13 +26,6 @@ def load_private_api_key() -> PrivateApiKey:
     except Exception as exception:
         raise Exception("Failed to load private API key from environment") from exception
 
-def get_existing_submission_ids(csv_filename):
-    if not os.path.exists(csv_filename):
-        return set()
-    with open(csv_filename, mode='r', newline='', encoding='utf-8') as file:
-        reader = csv.DictReader(file)
-        return {row['submissionId'] for row in reader}
-
 def write_submissions_to_csv(submissions, csv_filename):
     file_exists = os.path.exists(csv_filename)
     existing_ids = get_existing_submission_ids(csv_filename)
