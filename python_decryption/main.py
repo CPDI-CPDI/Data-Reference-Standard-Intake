@@ -47,8 +47,10 @@ def write_submissions_to_csv(submissions, csv_filename):
                 })
 
 def write_raw_json_objects(raw_objects, raw_json_filename):
+    # Convert raw encrypted submissions (JSON strings) to dicts
+    parsed_objects = [json.loads(obj) if isinstance(obj, str) else obj for obj in raw_objects]
     with open(raw_json_filename, 'w', encoding='utf-8') as f:
-        json.dump(raw_objects, f, ensure_ascii=False, indent=2)
+        json.dump(parsed_objects, f, ensure_ascii=False, indent=2)
 
 def main():
     private_api_key = load_private_api_key()
@@ -86,3 +88,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
