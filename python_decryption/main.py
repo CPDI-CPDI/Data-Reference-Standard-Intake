@@ -135,7 +135,7 @@ def main():
 
             print("\nSubmission confirmed")
             
-            print(new_form_submssion["answers"]["1"])
+            print(new_form_submission["answers"]["1"])
 
             responses_for_file = responses_for_file + decrypted_form_submission
     else:
