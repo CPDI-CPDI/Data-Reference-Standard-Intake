@@ -12,7 +12,7 @@ IDENTITY_PROVIDER_URL = "https://auth.forms-formulaires.alpha.canada.ca"
 PROJECT_IDENTIFIER = "284778202772022819"
 GCFORMS_API_URL = "https://api.forms-formulaires.alpha.canada.ca"
 CSV_FILENAME = "python_decryption/responses.csv"
-RAW_JSON_FILENAME = "python_decryption/raw_responses.json"
+RAW_TXT_FILENAME = "python_decryption/responses.txt"
 
 def load_private_api_key() -> PrivateApiKey:
     try:
@@ -46,11 +46,21 @@ def write_submissions_to_csv(submissions, csv_filename):
                     'checksum': submission.checksum
                 })
 
-def write_raw_json_objects(raw_objects, raw_json_filename):
-    # Convert raw encrypted submissions (JSON strings) to dicts
-    parsed_objects = [json.loads(obj) if isinstance(obj, str) else obj for obj in raw_objects]
-    with open(raw_json_filename, 'w', encoding='utf-8') as f:
-        json.dump(parsed_objects, f, ensure_ascii=False, indent=2)
+def write_raw_text_objects(raw_objects, raw_txt_filename):
+    with open(raw_txt_filename, 'w', encoding='utf-8') as f:
+        for i, obj in enumerate(raw_objects):
+            f.write(f"--- Submission {i + 1} ---\n")
+            try:
+                if isinstance(obj, str):
+                    f.write(obj + "\n\n")
+                elif hasattr(obj, "to_json"):
+                    f.write(json.dumps(obj.to_json(), indent=2) + "\n\n")
+                elif hasattr(obj, "__dict__"):
+                    f.write(json.dumps(obj.__dict__, indent=2) + "\n\n")
+                else:
+                    f.write(str(obj) + "\n\n")
+            except Exception as e:
+                f.write(f"[Error serializing submission {i + 1}]: {e}\n\n")
 
 def main():
     private_api_key = load_private_api_key()
@@ -67,11 +77,11 @@ def main():
         return
 
     verified_submissions = []
-    raw_json_objects = []
+    raw_text_objects = []
 
     for new_submission in new_form_submissions:
         encrypted_submission = api_client.get_form_submission(new_submission.name)
-        raw_json_objects.append(encrypted_submission)  # Save raw JSON before decryption
+        raw_text_objects.append(encrypted_submission)  # Save raw response before decryption
 
         decrypted_json = FormSubmissionDecrypter.decrypt(encrypted_submission, private_api_key)
         form_submission = FormSubmission.from_json(json.loads(decrypted_json))
@@ -81,11 +91,12 @@ def main():
             api_client.confirm_form_submission(new_submission.name, form_submission.confirmation_code)
 
     write_submissions_to_csv(verified_submissions, CSV_FILENAME)
-    write_raw_json_objects(raw_json_objects, RAW_JSON_FILENAME)
+    write_raw_text_objects(raw_text_objects, RAW_TXT_FILENAME)
 
     print(f"{len(verified_submissions)} new verified submissions saved to CSV.")
-    print(f"Raw JSON saved to {RAW_JSON_FILENAME}.")
+    print(f"Raw encrypted responses saved to {RAW_TXT_FILENAME}.")
 
 if __name__ == "__main__":
     main()
+
 
