@@ -141,7 +141,6 @@ def main():
 
     write_raw_text_objects(responses_for_file, RAW_TXT_FILENAME)
 
-    print(f"{len(verified_submissions)} new verified submissions saved to CSV.")
     print(f"Raw encrypted responses saved to {RAW_TXT_FILENAME}.")
 
 if __name__ == "__main__":
