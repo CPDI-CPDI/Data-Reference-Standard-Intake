@@ -134,8 +134,9 @@ def main():
             )
 
             print("\nSubmission confirmed")
-            
-            print(form_submission["answers"]["1"])
+                        
+            answers_dict = json.loads(form_submission.answers)
+            print(answers_dict["1"])
 
             responses_for_file = responses_for_file + decrypted_form_submission
     else:
