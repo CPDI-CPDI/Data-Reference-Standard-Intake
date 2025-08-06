@@ -50,7 +50,7 @@ def write_submissions_to_csv(submissions, csv_filename):
                         'submissionId': submission.confirmation_code,
                         'createdAt': submission.created_at,
                         'confirmationCode': submission.confirmation_code,
-                        'answers': submission.answers,
+                        'answers': json.dumps(submission.answers),
                         'checksum': submission.checksum
                     })
 
