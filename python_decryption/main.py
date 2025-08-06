@@ -64,34 +64,82 @@ def write_raw_text_objects(raw_objects, raw_txt_filename):
 
 def main():
     private_api_key = load_private_api_key()
-    access_token = AccessTokenGenerator.generate(
-        IDENTITY_PROVIDER_URL, PROJECT_IDENTIFIER, private_api_key
-    )
-    api_client = GCFormsApiClient(
-        private_api_key.form_id, GCFORMS_API_URL, access_token
-    )
+    responses_for_file = ""
+    print("\nGenerating access token...")
 
-    new_form_submissions = api_client.get_new_form_submissions()
-    if not new_form_submissions:
-        print("No new submissions found.")
-        return
+        access_token = AccessTokenGenerator.generate(
+            IDENTITY_PROVIDER_URL, PROJECT_IDENTIFIER, private_api_key
+        )
 
-    verified_submissions = []
-    raw_text_objects = []
+        api_client = GCFormsApiClient(
+            private_api_key.form_id, GCFORMS_API_URL, access_token
+        )
 
-    for new_submission in new_form_submissions:
-        encrypted_submission = api_client.get_form_submission(new_submission.name)
-        raw_text_objects.append(encrypted_submission)  # Save raw response before decryption
+        print("\nRetrieving form template...\n")
 
-        decrypted_json = FormSubmissionDecrypter.decrypt(encrypted_submission, private_api_key)
-        form_submission = FormSubmission.from_json(json.loads(decrypted_json))
+        form_template = api_client.get_form_template()
 
-        if FormSubmissionVerifier.verify_integrity(form_submission.answers, form_submission.checksum):
-            verified_submissions.append(form_submission)
-            api_client.confirm_form_submission(new_submission.name, form_submission.confirmation_code)
+        print(form_template)
 
-    write_submissions_to_csv(verified_submissions, CSV_FILENAME)
-    write_raw_text_objects(raw_text_objects, RAW_TXT_FILENAME)
+        print("\nRetrieving new form submissions...")
+
+        new_form_submissions = api_client.get_new_form_submissions()
+
+        if len(new_form_submissions) > 0:
+            print("\nNew form submissions:")
+
+            print(", ".join(x.name for x in new_form_submissions))
+
+            print("\nRetrieving, decrypting and confirming form submissions...")
+
+            for new_form_submission in new_form_submissions:
+                print(f"\nProcessing {new_form_submission.name}...\n")
+
+                print("Retrieving encrypted submission...")
+
+                encrypted_submission = api_client.get_form_submission(
+                    new_form_submission.name
+                )
+
+                print("\nEncrypted submission:")
+                print(encrypted_submission.encrypted_responses)
+
+                print("\nDecrypting submission...")
+
+                decrypted_form_submission = FormSubmissionDecrypter.decrypt(
+                    encrypted_submission, private_api_key
+                )
+
+                print("\nDecrypted submission:")
+                print(decrypted_form_submission)
+
+                form_submission = FormSubmission.from_json(
+                    json.loads(decrypted_form_submission)
+                )
+
+                print("\nVerifying submission integrity...")
+
+                integrity_verification_result = FormSubmissionVerifier.verify_integrity(
+                    form_submission.answers, form_submission.checksum
+                )
+
+                print(
+                    f"\nIntegrity verification result: {'OK' if integrity_verification_result else 'INVALID'}"
+                )
+
+                print("\nConfirming submission...")
+
+                api_client.confirm_form_submission(
+                    new_form_submission.name, form_submission.confirmation_code
+                )
+
+                print("\nSubmission confirmed")
+                
+                responses_for_file = responses_for_file + decrypted_form_submission + "/n"
+        else:
+            print("\nCould not find any new form submission!")
+
+    write_raw_text_objects(responses_for_file, RAW_TXT_FILENAME)
 
     print(f"{len(verified_submissions)} new verified submissions saved to CSV.")
     print(f"Raw encrypted responses saved to {RAW_TXT_FILENAME}.")
