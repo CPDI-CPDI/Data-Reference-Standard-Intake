@@ -38,14 +38,13 @@ def write_submissions_to_csv(submissions, csv_filename):
 
         for submission in submissions:
             if submission.confirmation_code and submission.answers and submission.checksum:
-                if submission.confirmation_code not in existing_ids:
-                    writer.writerow({
-                        'submissionId': submission.confirmation_code,
-                        'createdAt': submission.created_at,
-                        'confirmationCode': submission.confirmation_code,
-                        'answers': json.dumps(submission.answers),
-                        'checksum': submission.checksum
-                    })
+                writer.writerow({
+                    'submissionId': submission.confirmation_code,
+                    'createdAt': submission.created_at,
+                    'confirmationCode': submission.confirmation_code,
+                    'answers': json.dumps(submission.answers),
+                    'checksum': submission.checksum
+                })
 
 def write_raw_json_objects(raw_objects, raw_json_filename):
     with open(raw_json_filename, 'w', encoding='utf-8') as f:
