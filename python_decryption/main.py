@@ -135,7 +135,9 @@ def main():
 
             print("\nSubmission confirmed")
             
-            responses_for_file = responses_for_file + decrypted_form_submission + "/n"
+            print(new_form_submssion["answers"]["1"])
+
+            responses_for_file = responses_for_file + decrypted_form_submission
     else:
         print("\nCould not find any new form submission!")
 
