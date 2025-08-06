@@ -28,7 +28,6 @@ def load_private_api_key() -> PrivateApiKey:
 
 def write_submissions_to_csv(submissions, csv_filename):
     file_exists = os.path.exists(csv_filename)
-    existing_ids = get_existing_submission_ids(csv_filename)
 
     with open(csv_filename, mode='a' if file_exists else 'w', newline='', encoding='utf-8') as file:
         fieldnames = ['submissionId', 'createdAt', 'confirmationCode', 'answers', 'checksum']
