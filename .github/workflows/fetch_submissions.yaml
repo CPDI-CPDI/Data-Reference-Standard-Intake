@@ -34,16 +34,3 @@ jobs:
           git commit -m "Update responses.csv with new submissions" || echo "No changes to commit"
           git push
 
-      - name: Send email with CSV
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.office365.com
-          server_port: 587
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PW }}
-          subject: "GC Forms Submissions CSV"
-          to: ${{ secrets.USERNAME }}
-          from: ${{ secrets.USERNAME }}
-          body: "Attached is the latest responses.csv file."
-          attachments: python_decryption/responses.csv
-
