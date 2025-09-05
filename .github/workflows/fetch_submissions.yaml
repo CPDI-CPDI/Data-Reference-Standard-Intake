@@ -1,8 +1,6 @@
 name: Fetch GC Forms Submissions
 
 on:
-  schedule:
-    - cron: '0 12 * * 1'  # Every Monday at 12:00 UTC
   workflow_dispatch:
 
 jobs:
